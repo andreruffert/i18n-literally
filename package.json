@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava",
+    "literally": "./cli.js test.js es"
   },
   "repository": {
     "type": "git",
@@ -19,7 +20,10 @@
   "homepage": "https://github.com/andreruffert/i18n-literally#readme",
   "dependencies": {
     "@babel/parser": "^7.3.1",
-    "babel-collect-imports": "^1.1.0"
+    "babel-collect-imports": "^1.1.0",
+    "meow": "^5.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "ava": "^1.2.0"
+  }
 }
