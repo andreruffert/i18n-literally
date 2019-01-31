@@ -6,8 +6,33 @@
 // - ui to update db entries
 
 const fs = require('fs');
+const meow = require('meow');
 const parser = require('@babel/parser');
 const { collectImportsSync } = require('babel-collect-imports');
+
+const cli = meow(`
+	Usage
+	  $ literally <entry> <locale> [db]
+	Example
+	  $ literally ./index.js es
+    ...
+`);
+
+const options = {
+  entry: cli.input[0],                    // entry file
+  locale: cli.input[1],                   // locale to translate to
+  db: cli.input[2] || './i18n.db.json'    // db file
+};
+
+if (!options.entry) {
+	console.error('Specify a entry file');
+	process.exit(1);
+}
+
+if (!options.locale) {
+	console.error('Specify a locale');
+	process.exit(1);
+}
 
 const parserOptions = {
   // parse in strict mode and allow module declarations
@@ -37,12 +62,6 @@ const parserOptions = {
     'optionalChaining',
     'throwExpressions'
   ]
-};
-
-const options = {
-  locale: 'de',           // locale to translate to
-  entry: './localized.js',    // entry file
-  db: './i18n.db.json'    // db file
 };
 
 const chunks = (chunk, i) => (i ? ('${' + (i - 1) + '}') : '') + chunk;
