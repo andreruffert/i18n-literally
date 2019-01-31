@@ -109,7 +109,7 @@ internal.filter(path => path.endsWith('.js')).forEach(file => {
 
 console.log(db.new);
 
-fs.writeFile('i18n.db.json', JSON.stringify(db.new, null, 2), (err) => {
+fs.writeFile('i18n.db.json', `${JSON.stringify(db.new, null, 2)}\n`, (err) => {
   if (err) throw err;
   console.log('The file has been saved!');
 });
