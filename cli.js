@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
 // TODO:
-// - make sure to merge db
-// - make sure db only includes strings used (only i18n tags)
 // - ui to update db entries
 
 const fs = require('fs');
@@ -66,7 +64,10 @@ const parserOptions = {
 
 const chunks = (chunk, i) => (i ? ('${' + (i - 1) + '}') : '') + chunk;
 const { internal } = collectImportsSync(options.entry, { extensions: ['js']}, parserOptions);
-const db = JSON.parse(fs.readFileSync(options.db) || {});
+const db = {
+  old: JSON.parse(fs.readFileSync(options.db) || {}),
+  new: {}
+};
 
 const findTaggedTemplateExpression = node => {
   switch (node.type) {
@@ -74,8 +75,8 @@ const findTaggedTemplateExpression = node => {
       if (node.tag.name === 'i18n') {
         const strings = node.quasi.quasis.map(quasi => quasi.value.raw);
         const key = strings.join('\x01');
-        const translation = db[key] && db[key][options.locale] || strings.slice();
-        (db[key] = {})[options.locale] = translation;
+        const translation = db.old[key] && db.old[key][options.locale] || strings.slice();
+        (db.new[key] = {})[options.locale] = translation;
       }
     default:
       for (let key in node) {
@@ -106,9 +107,9 @@ internal.filter(path => path.endsWith('.js')).forEach(file => {
 //   // console.log(localeSentence.split(/\$\{([\s]*[^;\s\{]+[\s]*)\}/g));
 // })
 
-console.log(db);
+console.log(db.new);
 
-fs.writeFile('i18n.db.json', JSON.stringify(db, null, 2), (err) => {
+fs.writeFile('i18n.db.json', JSON.stringify(db.new, null, 2), (err) => {
   if (err) throw err;
   console.log('The file has been saved!');
 });
