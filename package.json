@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test": "ava",
-    "literally": "./cli.js test.js es"
+    "literally": "./cli.js test.js"
   },
   "files": [
     "index.js",
