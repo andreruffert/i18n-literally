@@ -90,4 +90,4 @@ internal.filter(path => path.endsWith('.js')).forEach(file => {
   ast.program.body.forEach(findTaggedTemplateExpression);
 });
 
-launchApp({ db, locale: options.locale });
+launchApp({ db, locale: options.locale, out: options.db });

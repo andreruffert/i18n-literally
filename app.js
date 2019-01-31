@@ -83,7 +83,7 @@ const getRoute = (options, req, res) => {
           return obj;
         }, {});
 
-        fs.writeFile('i18n.db.json', `${JSON.stringify(mergedDB, null, 2)}\n`, (err) => {
+        fs.writeFile(options.out, `${JSON.stringify(mergedDB, null, 2)}\n`, (err) => {
           if (err) throw err;
           res.writeHead(200, 'OK');
           res.end();
