@@ -1,5 +1,6 @@
 const fs = require('fs');
 const opn = require('opn');
+const pkg = require('./package.json');
 
 const chunkRegex = /\$\{[0-9]\}/g;
 const chunks = (chunk, i) => (i ? ('${' + (i - 1) + '}') : '') + chunk;
@@ -26,40 +27,48 @@ const getRoute = (options, req, res) => {
 
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.end(`
-        <style>
-          body {
-            font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
-          }
+        <!DOCTYPE html>
+        <html lang="en" dir="ltr">
+          <head>
+            <meta charset="utf-8">
+            <title>${pkg.name}</title>
+            <style>
+              body {
+                font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
+              }
 
-          textarea {
-            width: 100%;
-          }
-        </style>
-        <script>
-          const handleUpdate = e => {
-            e.preventDefault();
+              textarea {
+                width: 100%;
+              }
+            </style>
+            <script>
+              const handleUpdate = e => {
+                e.preventDefault();
 
-            const data = [...e.target.elements]
-              .filter(element => element.nodeName === 'TEXTAREA')
-              .filter(element => !element.readOnly)
-              .reduce((obj, element) => {
-                obj[element.name] = {
-                  ${options.locale}: element.value.split(${chunkRegex})
-                }
-                return obj;
-              }, {});
+                const data = [...e.target.elements]
+                  .filter(element => element.nodeName === 'TEXTAREA')
+                  .filter(element => !element.readOnly)
+                  .reduce((obj, element) => {
+                    obj[element.name] = {
+                      ${options.locale}: element.value.split(${chunkRegex})
+                    }
+                    return obj;
+                  }, {});
 
-            fetch('/update', {
-              method: 'post',
-              body: JSON.stringify(data)
-            });
-          }
-        </script>
-
-        <form onsubmit="handleUpdate(event)">
-          ${htmlFragments.join('')}
-          <button type="submit">Update translations</button>
-        </form>
+                fetch('/update', {
+                  method: 'post',
+                  body: JSON.stringify(data)
+                });
+              }
+            </script>
+          </head>
+          <body>
+            <form onsubmit="handleUpdate(event)">
+              ${htmlFragments.join('')}
+              <button type="submit">Update translations</button>
+            </form>
+          </body>
+        </html>
       `);
     },
     '/update': (req, res) => {
