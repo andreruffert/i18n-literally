@@ -27,3 +27,8 @@ i18n`Hello ${name}`
 ```
 $ npx i18n-literally ./index.js es
 ```
+
+
+## License
+
+MIT © [André Ruffert](https://andreruffert.com)
