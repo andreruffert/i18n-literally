@@ -1,23 +1,27 @@
 {
   "name": "i18n-literally",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.0",
   "description": "",
+  "license": "MIT",
+  "repository": "andreruffert/i18n-literally",
+  "author": "André Ruffert",
   "main": "index.js",
+  "bin": {
+    "literally": "cli.js"
+  },
   "scripts": {
     "test": "ava",
     "literally": "./cli.js test.js es"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/andreruffert/i18n-literally.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/andreruffert/i18n-literally/issues"
-  },
-  "homepage": "https://github.com/andreruffert/i18n-literally#readme",
+  "files": [
+    "index.js",
+    "cli.js"
+  ],
+  "keywords": [
+    "i18n",
+    "translation",
+    "localization"
+  ],
   "dependencies": {
     "@babel/parser": "^7.3.1",
     "babel-collect-imports": "^1.1.0",
