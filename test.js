@@ -9,9 +9,12 @@ i18n.db = db;
 const data1 = 'expression1';
 const data2 = 'expression2';
 
-test('locale', t => {
+test('locale change', t => {
   i18n.locale = 'es';
 	t.is(i18n`Hello ${data1}!`, `Hola ${data1}!`);
+
+  i18n.locale = 'de';
+	t.is(i18n`Hello ${data1}!`, `Hallo ${data1}!`);
 });
 
 test('nested tags', t => {
