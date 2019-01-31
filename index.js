@@ -4,7 +4,6 @@ function i18n(strings, ...values) {
   return translation.map((string, idx) => [string, values[idx]])
     .reduce((acc, val) => acc.concat(val), [])
     .join('');
-
 };
 
 // Defaults
