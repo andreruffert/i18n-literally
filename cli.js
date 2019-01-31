@@ -86,7 +86,7 @@ const findTaggedTemplateExpression = node => {
   }
 }
 
-internal.forEach(file => {
+internal.filter(path => path.endsWith('.js')).forEach(file => {
   const code = fs.readFileSync(file).toString();
   const ast = parser.parse(code, parserOptions);
   ast.program.body.forEach(findTaggedTemplateExpression);
