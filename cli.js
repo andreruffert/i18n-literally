@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 
-// TODO:
-// - ui to update db entries
-
 const fs = require('fs');
 const meow = require('meow');
 const parser = require('@babel/parser');
 const { collectImportsSync } = require('babel-collect-imports');
+const launchApp = require('./app');
 
 const cli = meow(`
 	Usage
@@ -62,7 +60,6 @@ const parserOptions = {
   ]
 };
 
-const chunks = (chunk, i) => (i ? ('${' + (i - 1) + '}') : '') + chunk;
 const { internal } = collectImportsSync(options.entry, { extensions: ['js']}, parserOptions);
 const db = {
   old: JSON.parse(fs.readFileSync(options.db) || {}),
@@ -93,23 +90,4 @@ internal.filter(path => path.endsWith('.js')).forEach(file => {
   ast.program.body.forEach(findTaggedTemplateExpression);
 });
 
-// // TODO: HTML output
-// Object.keys(db).forEach(key => {
-//
-//   const defaultSentence = key.split('\x01').map(chunks).join('');
-//   const localeSentence = db[key][options.locale].map(chunks).join('');
-//
-//   console.log(`
-//     en: ${defaultSentence}
-//     de: ${localeSentence}
-//   `);
-//
-//   // console.log(localeSentence.split(/\$\{([\s]*[^;\s\{]+[\s]*)\}/g));
-// })
-
-console.log(db.new);
-
-fs.writeFile('i18n.db.json', `${JSON.stringify(db.new, null, 2)}\n`, (err) => {
-  if (err) throw err;
-  console.log('The file has been saved!');
-});
+launchApp({ db, locale: options.locale });
