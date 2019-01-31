@@ -11,4 +11,4 @@ function i18n(strings, ...values) {
 i18n.locale = 'en';
 i18n.db = {};
 
-export default i18n;
+module.exports = i18n;
