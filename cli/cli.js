@@ -82,7 +82,10 @@ const findTaggedTemplateExpression = node => {
         const strings = node.quasi.quasis.map(quasi => quasi.value.raw);
         const key = strings.join('\x01');
         const translation = db.old[key] && db.old[key][options.locale] || strings.slice();
-        (db.new[key] = {})[options.locale] = translation;
+        // Skip empty strings & already existing keys
+        if (!db.new[key] && translation.join('') !== '') {
+          (db.new[key] = {})[options.locale] = translation;
+        }
       }
     default:
       for (let key in node) {
