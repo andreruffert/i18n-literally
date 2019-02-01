@@ -99,7 +99,7 @@ const getRoute = (options, req, res) => {
 
                 const data = [...e.target.elements]
                   .filter(element => element.nodeName === 'TEXTAREA')
-                  .filter(element => !element.readOnly)
+                  .filter(element => !element.disabled)
                   .reduce((obj, element) => {
                     obj[element.name] = {
                       ${options.locale}: element.value.split(${chunkRegex})
