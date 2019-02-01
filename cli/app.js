@@ -1,6 +1,6 @@
 const fs = require('fs');
 const opn = require('opn');
-const pkg = require('./package.json');
+const pkg = require('../package.json');
 
 const chunkRegex = /\$\{[0-9]\}/g;
 const chunks = (chunk, i) => (i ? ('${' + (i - 1) + '}') : '') + chunk;

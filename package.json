@@ -7,16 +7,15 @@
   "author": "André Ruffert",
   "main": "index.js",
   "bin": {
-    "literally": "cli.js"
+    "literally": "cli/cli.js"
   },
   "scripts": {
     "test": "ava",
-    "literally": "./cli.js test.js"
+    "literally": "./cli/cli.js test.js"
   },
   "files": [
     "index.js",
-    "app.js",
-    "cli.js"
+    "cli"
   ],
   "keywords": [
     "i18n",
