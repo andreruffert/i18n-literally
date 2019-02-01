@@ -12,16 +12,16 @@ const getRoute = (options, req, res) => {
         const defaultSentence = key.split('\x01').map(chunks).join('');
         const localizedSentence = options.db.new[key][options.locale].map(chunks).join('');
         return `
-          <div>
-            <b>en</b>
-            <textarea readonly>${defaultSentence}</textarea>
-          </div>
-          <div>
-            <label for="${key}">${options.locale}</label>
-            <textarea name="${key}" id="${key}">${localizedSentence}</textarea>
-          </div>
-          <br />
-          <br />
+          <p>
+            <div>
+              <b>en</b>
+              <textarea disabled>${defaultSentence}</textarea>
+            </div>
+            <div>
+              <label for="${key}">${options.locale}</label>
+              <textarea name="${key}" id="${key}">${localizedSentence}</textarea>
+            </div>
+          </p>
         `;
       });
 
@@ -33,11 +33,59 @@ const getRoute = (options, req, res) => {
             <meta charset="utf-8">
             <title>${pkg.name}</title>
             <style>
-              body {
+              :root {
+                --text-black: #24292e;
+                --border-gray: #d1d5da;
+                --border-radius: 3px;
+
+                box-sizing: border-box;
+                color: var(--text-black);
                 font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
               }
 
+              *,
+              *:before,
+              *:after {
+                box-sizing: inherit;
+              }
+
+              body {
+                margin: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+              }
+
+              form {
+                border: 1px solid var(--border-gray);
+                border-radius: var(--border-radius);
+                flex: 1;
+                max-width: 600px;
+                margin: 10px;
+                padding: 8px 10px;
+              }
+
               textarea {
+                border: 1px solid var(--border-gray);
+                border-radius: var(--border-radius);
+                width: 100%;
+                resize: vertical;
+                padding: 8px;
+              }
+              textarea[disabled] {
+                background-color: #fafbfc;
+              }
+
+              button {
+                background-color: #24292e;
+                border-radius: var(--border-radius);
+                border: 0;
+                color: white;
+                cursor: pointer;
+                font-weight: 500;
+                font-size: 16px;
+                padding: 20px 32px;
                 width: 100%;
               }
             </style>
