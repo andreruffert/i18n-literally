@@ -37,10 +37,13 @@ const getRoute = (options, req, res) => {
                 --text-black: #24292e;
                 --border-gray: #d1d5da;
                 --border-radius: 3px;
+                --bg-black: #24292e;
+                --bg-gray: #f6f8fa;
 
                 box-sizing: border-box;
                 color: var(--text-black);
                 font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
+                font-size: 14px;
               }
 
               *,
@@ -69,16 +72,17 @@ const getRoute = (options, req, res) => {
               textarea {
                 border: 1px solid var(--border-gray);
                 border-radius: var(--border-radius);
+                font-size: inherit;
                 width: 100%;
                 resize: vertical;
                 padding: 8px;
               }
               textarea[disabled] {
-                background-color: #fafbfc;
+                background-color: var(--bg-gray);
               }
 
               button {
-                background-color: #24292e;
+                background-color: var(--bg-black);
                 border-radius: var(--border-radius);
                 border: 0;
                 color: white;
