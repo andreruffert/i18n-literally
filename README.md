@@ -4,6 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/i18n-literally.svg)](https://www.npmjs.com/package/i18n-literally)
 
+
 ## Install
 
 ```
@@ -17,25 +18,23 @@ $ npm install i18n-literally
 import i18n from 'i18n-literally';
 import db from './i18n.db.json';
 
-// Default locale
-i18n.locale = 'en';
-
-// Set a database
+// Set the database
 i18n.db = db;
 
-// Write in the default language
+// 1. Write in the default language
 i18n`Hello ${'World'}!`
 // => Hello World!
 
-// Switch to Spanish
+// 2. Add/update your translations for a language
+"$ npx i18n-literally index.js es"
+
+// 3. Get translations based on locale
 i18n.locale = 'es';
 i18n`Hello ${'World'}!`
 // => Hola World!
-
-i18n.locale = 'de';
-i18n`Hello ${'World'}!`
-// => Hallo World!
 ```
+
+Write your entire application default language, and support multiple versions of the language by simply changing the `i18n.locale`. To Add/update translations simply run the [cli](#cli).
 
 
 ## API
