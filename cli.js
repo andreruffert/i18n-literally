@@ -7,11 +7,20 @@ const { collectImportsSync } = require('babel-collect-imports');
 const launchApp = require('./app');
 
 const cli = meow(`
-	Usage
-	  $ literally <entry> <locale> [db]
-	Example
-	  $ literally ./index.js es
-    ...
+  Usage:
+    $ literally <entry> <locale> [db]
+
+  Arguments:
+    <entry>     The entry file of your app
+    <locale>    Locale to add/update translations for
+    [db]        Database file defaults to "./i18n.db.json"
+
+  Options:
+    --help      Show information
+    --version   Show current version
+
+  Example:
+    $ literally ./index.js es
 `);
 
 const options = {
