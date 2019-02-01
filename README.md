@@ -79,6 +79,9 @@ $ npx i18n-literally --help
     $ literally ./index.js es
 ```
 
+_The cli web app to add/update translations_.
+![alt text](https://user-images.githubusercontent.com/464300/52097192-240d8c80-25ca-11e9-9a97-8a7d3b4626e0.png)
+
 
 ## Related
 
