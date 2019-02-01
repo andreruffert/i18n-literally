@@ -130,7 +130,8 @@ const getRoute = (options, req, res) => {
       req.on('end', () => {
         const existingDB = options.db.old;
         const updatedDB = JSON.parse(body.join(''));
-        const mergedDB = Object.keys(existingDB).reduce((obj, key) => {
+        // We merge the database with the other language translations than `options.locale`
+        const mergedDB = Object.keys(updatedDB).reduce((obj, key) => {
           obj[key] = { ...existingDB[key], ...updatedDB[key]}
           return obj;
         }, {});
