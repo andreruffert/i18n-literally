@@ -1,6 +1,6 @@
 # i18n-literally
 
-> A simple way to introduce `i18n` to your JS.
+> A simple way to introduce internationalization to your JS.
 
 [![npm version](https://img.shields.io/npm/v/i18n-literally.svg)](https://www.npmjs.com/package/i18n-literally)
 
@@ -34,7 +34,7 @@ i18n`Hello ${'World'}!`
 // => Hola World!
 ```
 
-Write your entire application default language, and support multiple versions of the language by simply changing the `i18n.locale`. To Add/update translations simply run the [cli](#cli).
+Write your entire application in the default language, and support multiple versions of the language by simply changing the `i18n.locale`. To Add/update translations simply run the [cli](#cli).
 
 
 ## API
