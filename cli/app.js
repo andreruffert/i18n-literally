@@ -1,5 +1,6 @@
 const fs = require('fs');
 const opn = require('opn');
+const { mergeDB } = require('./helpers');
 const pkg = require('../package.json');
 
 const chunkRegex = /\$\{[0-9]\}/g;
@@ -130,11 +131,7 @@ const getRoute = (options, req, res) => {
       req.on('end', () => {
         const existingDB = options.db.old;
         const updatedDB = JSON.parse(body.join(''));
-        // We merge the database with the other language translations than `options.locale`
-        const mergedDB = Object.keys(updatedDB).reduce((obj, key) => {
-          obj[key] = { ...existingDB[key], ...updatedDB[key]}
-          return obj;
-        }, {});
+        const mergedDB = mergeDB(existingDB, updatedDB);
 
         fs.writeFile(options.out, `${JSON.stringify(mergedDB, null, 2)}\n`, (err) => {
           if (err) throw err;
