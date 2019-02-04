@@ -21,7 +21,7 @@
     "i18n",
     "js",
     "template-literals",
-    "internationalization"
+    "internationalization",
     "translation",
     "localization",
     "cli"
