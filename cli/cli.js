@@ -2,13 +2,17 @@
 
 const fs = require('fs');
 const meow = require('meow');
+const chalk = require('chalk');
 const parser = require('@babel/parser');
 const { collectImportsSync } = require('babel-collect-imports');
 const launchApp = require('./app');
+const pkg = require('../package.json');
+
+const CLI_NAME = Object.keys(pkg.bin)[0];
 
 const cli = meow(`
   Usage:
-    $ literally <entry> <locale> [db]
+    $ ${CLI_NAME} <entry> <locale> [db]
 
   Arguments:
     <entry>     The entry file of your app
@@ -20,8 +24,12 @@ const cli = meow(`
     --version   Show current version
 
   Example:
-    $ literally ./index.js es
+    $ ${CLI_NAME} ./index.js es
 `);
+
+const flag = {
+  error: msg => chalk.red(`\n${msg}\nTry \`${CLI_NAME} --help\` for more informations.\n`)
+};
 
 const options = {
   entry: cli.input[0],                    // entry file
@@ -30,12 +38,12 @@ const options = {
 };
 
 if (!options.entry) {
-	console.error('Specify a entry file');
+  console.log(`${flag.error(`Missing <entry> argument.`)}`);
 	process.exit(1);
 }
 
 if (!options.locale) {
-	console.error('Specify a locale');
+  console.log(`${flag.error(`Missing <locale> argument.`)}`);
 	process.exit(1);
 }
 
