@@ -111,7 +111,11 @@ const getRoute = (options, req, res) => {
                 fetch('/update', {
                   method: 'post',
                   body: JSON.stringify(data)
-                });
+                }).then(res => {
+                  if (res.ok) {
+                    alert('Your translations have been saved')
+                  }
+                }).catch(e => alert(e))
               }
             </script>
           </head>
