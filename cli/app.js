@@ -12,8 +12,9 @@ const getRoute = (options, req, res) => {
       const htmlFragments = Object.keys(options.db.new).map((key, idx) => {
         const defaultSentence = key.split('\x01').map(chunks).join('');
         const localizedSentence = options.db.new[key][options.locale].map(chunks).join('');
+        const missingTranslation = defaultSentence === localizedSentence;
         return `
-          <p>
+          <div class="group" ${(missingTranslation) ? 'data-missing-translation' : ''}>
             <div>
               <b>en</b>
               <textarea disabled>${defaultSentence}</textarea>
@@ -22,7 +23,7 @@ const getRoute = (options, req, res) => {
               <label for="${key}">${options.locale}</label>
               <textarea name="${key}" id="${key}">${localizedSentence}</textarea>
             </div>
-          </p>
+          </div>
         `;
       });
 
@@ -35,11 +36,16 @@ const getRoute = (options, req, res) => {
             <title>${pkg.name}</title>
             <style>
               :root {
+                --red: #d73a49;
                 --text-black: #24292e;
+                --text-red: var(--red);
                 --border-gray: #d1d5da;
+                --border-red: var(--red);
                 --border-radius: 3px;
                 --bg-black: #24292e;
+                --bg-white: white;
                 --bg-gray: #f6f8fa;
+                --bg-red: var(--red);
 
                 box-sizing: border-box;
                 color: var(--text-black);
@@ -67,7 +73,21 @@ const getRoute = (options, req, res) => {
                 flex: 1;
                 max-width: 600px;
                 margin: 10px;
+              }
+
+              .group {
+                margin: 16px 0;
                 padding: 8px 10px;
+              }
+              .group[data-missing-translation] {
+                background-color: var(--bg-white);
+                border: 1px solid var(--border-red);
+                border-left-width: 5px;
+                border-radius: var(--border-radius);
+                transform: scale(1.05);
+              }
+              .group[data-missing-translation] label {
+                color: var(--text-red);
               }
 
               textarea {
@@ -77,6 +97,10 @@ const getRoute = (options, req, res) => {
                 width: 100%;
                 resize: vertical;
                 padding: 8px;
+              }
+              textarea:focus {
+                box-shadow: inset 0 1px 2px rgba(27,31,35,.075), 0 0 0 0.2em rgba(3,102,214,.3);
+                outline: 0;
               }
               textarea[disabled] {
                 background-color: var(--bg-gray);
