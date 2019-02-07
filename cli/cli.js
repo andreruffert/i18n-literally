@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const path = require('path');
 const meow = require('meow');
 const chalk = require('chalk');
 const parser = require('@babel/parser');
-const { collectImportsSync } = require('babel-collect-imports');
 const launchApp = require('./app');
 const pkg = require('../package.json');
 
@@ -77,14 +77,34 @@ const parserOptions = {
   ]
 };
 
-const { internal } = collectImportsSync(options.entry, { extensions: ['js']}, parserOptions);
+const NODE_PATH = process.env.NODE_PATH || '';
+const fileCache = [];
+const indexedFiles = [];
 const db = {
   old: JSON.parse(fs.readFileSync(options.db) || {}),
   new: {}
 };
 
-const findTaggedTemplateExpression = node => {
+function traverseFiles(file) {
+  const code = fs.readFileSync(file).toString();
+  const ast = parser.parse(code, parserOptions);
+  const basePath = path.dirname(file);
+  ast.program.body.forEach(node => traverseNode(node, basePath));
+}
+
+function traverseNode(node, basePath) {
   switch (node.type) {
+    case 'ImportDeclaration':
+      const isRelativePath = node.source.value.startsWith('.');
+      const importPath = path.resolve(isRelativePath ? basePath : NODE_PATH, node.source.value);
+      if (!fileCache.includes(importPath)) {
+        try {
+          traverseFiles(require.resolve(importPath));
+          indexedFiles.push(importPath);
+        } catch {}
+        fileCache.push(importPath);
+      }
+      break;
     case 'TaggedTemplateExpression':
       if (node.tag.name === 'i18n') {
         const strings = node.quasi.quasis.map(quasi => quasi.value.raw);
@@ -95,19 +115,15 @@ const findTaggedTemplateExpression = node => {
           (db.new[key] = {})[options.locale] = translation;
         }
       }
+      break;
     default:
       for (let key in node) {
         if (typeof node[key] === 'object') {
-          findTaggedTemplateExpression(node[key] || {});
+          traverseNode((node[key] || {}), basePath);
         }
       }
   }
 }
 
-internal.filter(path => path.endsWith('.js')).forEach(file => {
-  const code = fs.readFileSync(file).toString();
-  const ast = parser.parse(code, parserOptions);
-  ast.program.body.forEach(findTaggedTemplateExpression);
-});
-
+traverseFiles(options.entry);
 launchApp({ db, locale: options.locale, out: options.db });
