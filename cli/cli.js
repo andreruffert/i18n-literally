@@ -127,3 +127,8 @@ function traverseNode(node, basePath) {
 
 traverseFiles(options.entry);
 launchApp({ db, locale: options.locale, out: options.db });
+
+console.log(`
+  Indexed files: ${indexedFiles.length}
+  Keys total: ${Object.keys(db.new).length}
+`);
