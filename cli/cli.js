@@ -99,10 +99,10 @@ function traverseNode(node, basePath) {
       const importPath = path.resolve(isRelativePath ? basePath : NODE_PATH, node.source.value);
       if (!fileCache.includes(importPath)) {
         try {
+          fileCache.push(importPath);
           traverseFiles(require.resolve(importPath));
           indexedFiles.push(importPath);
         } catch {}
-        fileCache.push(importPath);
       }
       break;
     case 'TaggedTemplateExpression':
