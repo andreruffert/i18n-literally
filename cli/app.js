@@ -160,6 +160,17 @@ const getRoute = (options, req, res) => {
                   }
                 }).catch(e => alert(e))
               }
+
+              // Confirm
+              window.addEventListener('beforeunload', e => {
+                e.preventDefault();
+
+                // Chrome requires returnValue to be set
+                e.returnValue = '';
+              });
+
+              // Exit CLI
+              window.addEventListener('unload', e => fetch('/exit'));
             </script>
           </head>
           <body>
@@ -186,6 +197,11 @@ const getRoute = (options, req, res) => {
           res.end();
         });
       });
+    },
+    '/exit': (req, res) => {
+      res.writeHead(200, 'OK');
+      res.end();
+      process.exit(0);
     },
     'default': (req, res) => {
       res.writeHead(404, 'Not Found');
