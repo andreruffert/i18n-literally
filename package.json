@@ -11,6 +11,7 @@
   },
   "scripts": {
     "test": "ava",
+    "test-translations": "./cli/cli.js check-missing-translations test.js",
     "literally": "./cli/cli.js test.js"
   },
   "files": [

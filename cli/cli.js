@@ -10,12 +10,15 @@ const launchApp = require('./app');
 const pkg = require('../package.json');
 
 const CLI_NAME = Object.keys(pkg.bin)[0];
+const CMDS = ['edit', 'check-missing-translations'];
+const getCommand = cmd => CMDS.includes(cmd) ? cmd : CMDS[0];
 
 const cli = meow(`
   Usage:
-    $ ${CLI_NAME} <entry> <locale> [db]
+    $ ${CLI_NAME} <cmd> <entry> <locale> [db]
 
   Arguments:
+    <cmd>       Command
     <entry>     The entry file of your app
     <locale>    Locale to add/update translations for
     [db]        Database file defaults to "./i18n.db.json"
@@ -25,25 +28,31 @@ const cli = meow(`
     --version   Show current version
 
   Example:
-    $ ${CLI_NAME} ./index.js es
+    $ ${CLI_NAME} edit ./index.js es
 `);
 
+const args = [...cli.input];
 const flag = {
   error: msg => chalk.red(`\n${msg}\nTry \`${CLI_NAME} --help\` for more informations.\n`)
 };
 
+if (!CMDS.includes(args[0])) {
+  args.unshift(CMDS[0]);
+}
+
 const options = {
-  entry: cli.input[0],                    // entry file
-  locale: cli.input[1],                   // locale to translate to
-  db: cli.input[2] || './i18n.db.json'    // db file
-};
+  cmd: args[0],                     // command with default fallback
+  entry: args[1],                   // entry file
+  locale: args[2],                  // locale to translate to
+  db: args[3] || './i18n.db.json'   // db file
+}
 
 if (!options.entry) {
   console.log(`${flag.error(`Missing <entry> argument.`)}`);
 	process.exit(1);
 }
 
-if (!options.locale) {
+if (options.cmd === CMDS[0] && !options.locale) {
   console.log(`${flag.error(`Missing <locale> argument.`)}`);
 	process.exit(1);
 }
@@ -82,9 +91,34 @@ const NODE_PATH = process.env.NODE_PATH || '';
 const fileCache = [];
 const indexedFiles = [];
 const db = {
-  old: JSON.parse(fs.readFileSync(options.db) || {}),
-  new: {}
+  fileSystem: JSON.parse(fs.readFileSync(options.db) || {}),
+  indexed: {}
 };
+
+traverseFiles(options.entry);
+
+// Edit mode
+if (options.cmd === CMDS[0]) {
+  launchApp({ db, locale: options.locale, out: options.db });
+}
+
+// Check for missing translations
+if (options.cmd === CMDS[1]) {
+  if (hasMissingTranslations(db)) {
+    console.log(`Missing translations\n`);
+  	process.exit(1);
+  }
+}
+
+console.log(`
+  Indexed files: ${indexedFiles.length}
+  Keys total: ${Object.keys(db.indexed).length}
+  Translations: ${Object.keys(db.fileSystem).length}
+  Removed: ${Object.keys(db.fileSystem).length - Object.keys(db.indexed).length}
+  Missing: ${Object.keys(db.indexed).length - Object.keys(db.fileSystem).length}
+`);
+
+
 
 function traverseFiles(file) {
   const code = fs.readFileSync(file).toString();
@@ -110,10 +144,10 @@ function traverseNode(node, basePath) {
       if (node.tag.name === 'i18n') {
         const strings = node.quasi.quasis.map(quasi => quasi.value.raw);
         const key = strings.join('\x01');
-        const translation = db.old[key] && db.old[key][options.locale] || strings.slice();
+        const translation = db.fileSystem[key] && db.fileSystem[key][options.locale || 'default'] || strings.slice();
         // Skip empty strings & already existing keys
-        if (!db.new[key] && translation.join('') !== '') {
-          (db.new[key] = {})[options.locale] = translation;
+        if (!db.indexed[key] && translation.join('') !== '') {
+          (db.indexed[key] = {})[options.locale || 'default'] = translation;
         }
       }
       break;
@@ -126,10 +160,10 @@ function traverseNode(node, basePath) {
   }
 }
 
-traverseFiles(options.entry);
-launchApp({ db, locale: options.locale, out: options.db });
-
-console.log(`
-  Indexed files: ${indexedFiles.length}
-  Keys total: ${Object.keys(db.new).length}
-`);
+function hasMissingTranslations(db) {
+  // Simply compare the indexed keys with the saved db keys.
+  // TODO: check for missing language translations
+  const totalIndexedDBKeys = Object.keys(db.indexed).length;
+  const totalFileSystemDBKeys = Object.keys(db.fileSystem).length;
+  return (totalIndexedDBKeys !== totalFileSystemDBKeys);
+}
