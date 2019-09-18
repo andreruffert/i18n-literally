@@ -11,9 +11,9 @@ const chunks = (chunk, i) => (i ? ('${' + (i - 1) + '}') : '') + chunk;
 const getRoute = (options, req, res) => {
   const routes = {
     '/': (req, res) => {
-      const htmlFragments = Object.keys(options.db.new).map((key, idx) => {
+      const htmlFragments = Object.keys(options.db.indexed).map((key, idx) => {
         const defaultSentence = key.split('\x01').map(chunks).join('');
-        const localizedSentence = options.db.new[key][options.locale].map(chunks).join('');
+        const localizedSentence = options.db.indexed[key][options.locale].map(chunks).join('');
         const missingTranslation = defaultSentence === localizedSentence;
         return `
           <div class="group" ${(missingTranslation) ? 'data-missing-translation' : ''}>
@@ -189,7 +189,7 @@ const getRoute = (options, req, res) => {
       const db = {};
       req.on('data', data => body.push(data));
       req.on('end', () => {
-        const existingDB = options.db.old;
+        const existingDB = options.db.fileSystem;
         const updatedDB = JSON.parse(body.join(''));
         const mergedDB = mergeDB(existingDB, updatedDB);
 
