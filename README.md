@@ -64,9 +64,10 @@ All translations are stored in a [i18n.db.json](i18n.db.json) file.
 $ npx i18n-literally --help
 
   Usage:
-    $ literally <entry> <locale> [db]
+    $ literally <cmd> <entry> <locale> [db]
 
   Arguments:
+    <cmd>       Command defaults to "edit" (edit, check-missing-translations)
     <entry>     The entry file of your app
     <locale>    Locale to add/update translations for
     [db]        Database file defaults to "./i18n.db.json"
@@ -76,7 +77,7 @@ $ npx i18n-literally --help
     --version   Show current version
 
   Example:
-    $ literally ./index.js es
+    $ literally edit ./index.js es
 ```
 
 _The cli web app to add/update translations_.

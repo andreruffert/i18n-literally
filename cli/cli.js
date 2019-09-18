@@ -18,7 +18,7 @@ const cli = meow(`
     $ ${CLI_NAME} <cmd> <entry> <locale> [db]
 
   Arguments:
-    <cmd>       Command
+    <cmd>       Command defaults to "${CMDS[0]}" (${CMDS.join(', ')})
     <entry>     The entry file of your app
     <locale>    Locale to add/update translations for
     [db]        Database file defaults to "./i18n.db.json"
