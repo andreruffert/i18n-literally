@@ -24,6 +24,8 @@ const cli = meow(`
     [db]        Database file defaults to "./i18n.db.json"
 
   Options:
+    --root      Project's root directory (default: $PWD)
+    --rootAlias Alias used by imports for project's root
     --help      Show information
     --version   Show current version
 
@@ -31,7 +33,10 @@ const cli = meow(`
     $ ${CLI_NAME} edit ./index.js es
 `);
 
+
 const args = [...cli.input];
+const flags = { ...cli.flags, root: cli.flags.root || process.env.PWD }
+
 const flag = {
   error: msg => chalk.red(`\n${msg}\nTry \`${CLI_NAME} --help\` for more informations.\n`)
 };
@@ -45,7 +50,7 @@ const options = {
   entry: args[1],                   // entry file
   locale: args[2],                  // locale to translate to
   db: args[3] || './i18n.db.json'   // db file
-}
+};
 
 if (!options.entry) {
   console.log(`${flag.error(`Missing <entry> argument.`)}`);
@@ -130,8 +135,18 @@ function traverseFiles(file) {
 function traverseNode(node, basePath) {
   switch (node.type) {
     case 'ImportDeclaration':
-      const isRelativePath = node.source.value.startsWith('.');
-      const importPath = path.resolve(isRelativePath ? basePath : NODE_PATH, node.source.value);
+      let filePath = node.source.value;
+      let dirPath = NODE_PATH;
+      const isRelativePath = filePath.startsWith('.')
+      if (flags.rootAlias && filePath.startsWith(flags.rootAlias)) {
+        filePath = filePath.replace(new RegExp(`^${flags.rootAlias}\/?`), '');
+        dirPath = flags.root;
+      }
+      if (isRelativePath) {
+        dirPath = basePath;
+      }
+      const importPath = path.resolve(dirPath, filePath);
+
       if (!fileCache.includes(importPath)) {
         try {
           fileCache.push(importPath);
