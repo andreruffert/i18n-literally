@@ -24,6 +24,8 @@ const cli = meow(`
     [db]        Database file defaults to "./i18n.db.json"
 
   Options:
+    --root      Project's root directory (default: $PWD)
+    --rootAlias Alias used by imports for project's root
     --help      Show information
     --version   Show current version
 
@@ -31,7 +33,10 @@ const cli = meow(`
     $ ${CLI_NAME} edit ./index.js es
 `);
 
+
 const args = [...cli.input];
+const flags = { ...cli.flags, root: cli.flags.root || process.env.PWD }
+
 const flag = {
   error: msg => chalk.red(`\n${msg}\nTry \`${CLI_NAME} --help\` for more informations.\n`)
 };
@@ -130,8 +135,17 @@ function traverseFiles(file) {
 function traverseNode(node, basePath) {
   switch (node.type) {
     case 'ImportDeclaration':
-      const isRelativePath = node.source.value.startsWith('.');
-      const importPath = path.resolve(isRelativePath ? basePath : NODE_PATH, node.source.value);
+      let filepath = node.source.value
+      let dirpath = NODE_PATH
+      if (flags.rootAlias && filepath.indexOf(flags.rootAlias) === 0) {
+        filepath = filepath.replace(/^~\/?/, '')
+        dirpath = flags.root
+      }
+      if (filepath.startsWith('.')) {
+        dirpath = basePath
+      }
+      const importPath = path.resolve(dirpath, filepath);
+
       if (!fileCache.includes(importPath)) {
         try {
           fileCache.push(importPath);
