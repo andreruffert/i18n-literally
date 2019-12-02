@@ -50,7 +50,7 @@ const options = {
   entry: args[1],                   // entry file
   locale: args[2],                  // locale to translate to
   db: args[3] || './i18n.db.json'   // db file
-}
+};
 
 if (!options.entry) {
   console.log(`${flag.error(`Missing <entry> argument.`)}`);
@@ -135,16 +135,17 @@ function traverseFiles(file) {
 function traverseNode(node, basePath) {
   switch (node.type) {
     case 'ImportDeclaration':
-      let filepath = node.source.value
-      let dirpath = NODE_PATH
-      if (flags.rootAlias && filepath.indexOf(flags.rootAlias) === 0) {
-        filepath = filepath.replace(/^~\/?/, '')
-        dirpath = flags.root
+      let filePath = node.source.value;
+      let dirPath = NODE_PATH;
+      const isRelativePath = filePath.startsWith('.')
+      if (flags.rootAlias && filePath.startsWith(flags.rootAlias)) {
+        filePath = filePath.replace(new RegExp(`^${flags.rootAlias}\/?`), '');
+        dirPath = flags.root;
       }
-      if (filepath.startsWith('.')) {
-        dirpath = basePath
+      if (isRelativePath) {
+        dirPath = basePath;
       }
-      const importPath = path.resolve(dirpath, filepath);
+      const importPath = path.resolve(dirPath, filePath);
 
       if (!fileCache.includes(importPath)) {
         try {
