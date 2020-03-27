@@ -2,8 +2,8 @@
 
 > A simple way to introduce internationalization to your JS.
 
+[![CI status](https://github.com/andreruffert/i18n-literally/workflows/CI/badge.svg)](https://github.com/andreruffert/i18n-literally/actions?workflow=CI)
 [![npm version](https://img.shields.io/npm/v/i18n-literally.svg)](https://www.npmjs.com/package/i18n-literally)
-[![Build Status](https://travis-ci.org/andreruffert/i18n-literally.svg?branch=master)](https://travis-ci.org/andreruffert/i18n-literally)
 
 
 ## Install
