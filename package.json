@@ -14,6 +14,11 @@
     "test-translations": "./cli/cli.js check-missing-translations test.js",
     "literally": "./cli/cli.js test.js"
   },
+  "ava": {
+    "require": [
+      "esm"
+    ]
+  },
   "files": [
     "index.js",
     "cli"
@@ -34,6 +39,7 @@
     "opn": "^6.0.0"
   },
   "devDependencies": {
-    "ava": "^3.7.0"
+    "ava": "^3.7.0",
+    "esm": "^3.2.25"
   }
 }
