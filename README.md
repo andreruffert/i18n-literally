@@ -4,7 +4,7 @@
 
 [![CI status](https://github.com/andreruffert/i18n-literally/workflows/CI/badge.svg)](https://github.com/andreruffert/i18n-literally/actions?workflow=CI)
 [![npm version](https://img.shields.io/npm/v/i18n-literally.svg)](https://www.npmjs.com/package/i18n-literally)
-
+[![npm downloads](https://img.shields.io/npm/dm/i18n-literally?logo=npm)](https://www.npmjs.com/package/i18n-literally)
 
 ## Install
 
