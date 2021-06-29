@@ -35,7 +35,7 @@
   "dependencies": {
     "@babel/parser": "^7.9.4",
     "chalk": "^4.0.0",
-    "meow": "^8.0.0",
+    "meow": "^10.0.1",
     "opn": "^6.0.0"
   },
   "devDependencies": {
