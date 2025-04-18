@@ -1,18 +1,19 @@
 #!/usr/bin/env node
 
-import fs from 'node:fs'
+import fs from 'node:fs';
 import path from 'node:path';
-import meow from 'meow';
-import chalk from 'chalk';
 import { parse } from '@babel/parser';
+import chalk from 'chalk';
+import meow from 'meow';
+import pkg from '../package.json' with { type: 'json' };
 import { launchApp } from './app.js';
-import pkg from '../package.json' with { type: "json" };
 
 const CLI_NAME = Object.keys(pkg.bin)[0];
 const CMDS = ['edit', 'check-missing-translations'];
-const getCommand = cmd => CMDS.includes(cmd) ? cmd : CMDS[0];
+const getCommand = (cmd) => (CMDS.includes(cmd) ? cmd : CMDS[0]);
 
-const cli = meow(`
+const cli = meow(
+  `
   Usage:
     $ ${CLI_NAME} <cmd> <entry> <locale> [db]
 
@@ -30,16 +31,17 @@ const cli = meow(`
 
   Example:
     $ ${CLI_NAME} edit ./index.js es
-`, {
-  importMeta: import.meta,
-});
-
+`,
+  {
+    importMeta: import.meta,
+  },
+);
 
 const args = [...cli.input];
-const flags = { ...cli.flags, root: cli.flags.root || process.env.PWD }
+const flags = { ...cli.flags, root: cli.flags.root || process.env.PWD };
 
 const flag = {
-  error: msg => chalk.red(`\n${msg}\nTry \`${CLI_NAME} --help\` for more informations.\n`)
+  error: (msg) => chalk.red(`\n${msg}\nTry \`${CLI_NAME} --help\` for more informations.\n`),
 };
 
 if (!CMDS.includes(args[0])) {
@@ -47,20 +49,20 @@ if (!CMDS.includes(args[0])) {
 }
 
 const options = {
-  cmd: args[0],                     // command with default fallback
-  entry: args[1],                   // entry file
-  locale: args[2],                  // locale to translate to
-  db: args[3] || './i18n.db.json'   // db file
+  cmd: args[0], // command with default fallback
+  entry: args[1], // entry file
+  locale: args[2], // locale to translate to
+  db: args[3] || './i18n.db.json', // db file
 };
 
 if (!options.entry) {
   console.log(`${flag.error(`Missing <entry> argument.`)}`);
-	process.exit(1);
+  process.exit(1);
 }
 
 if (options.cmd === CMDS[0] && !options.locale) {
   console.log(`${flag.error(`Missing <locale> argument.`)}`);
-	process.exit(1);
+  process.exit(1);
 }
 
 const parserOptions = {
@@ -89,8 +91,8 @@ const parserOptions = {
     'objectRestSpread',
     'optionalCatchBinding',
     'optionalChaining',
-    'throwExpressions'
-  ]
+    'throwExpressions',
+  ],
 };
 
 const NODE_PATH = process.env.NODE_PATH || '';
@@ -98,7 +100,7 @@ const fileCache = [];
 const indexedFiles = [];
 const db = {
   fileSystem: JSON.parse(fs.readFileSync(options.db) || {}),
-  indexed: {}
+  indexed: {},
 };
 
 traverseFiles(options.entry);
@@ -112,7 +114,7 @@ if (options.cmd === CMDS[0]) {
 if (options.cmd === CMDS[1]) {
   if (hasMissingTranslations(db)) {
     console.log(`Missing translations\n`);
-  	process.exit(1);
+    process.exit(1);
   }
 }
 
@@ -124,13 +126,11 @@ console.log(`
   Missing: ${Object.keys(db.indexed).length - Object.keys(db.fileSystem).length}
 `);
 
-
-
 function traverseFiles(file) {
   const code = fs.readFileSync(file).toString();
   const ast = parse(code, parserOptions);
   const basePath = path.dirname(file);
-  ast.program.body.forEach(node => traverseNode(node, basePath));
+  ast.program.body.forEach((node) => traverseNode(node, basePath));
 }
 
 function traverseNode(node, basePath) {
@@ -138,7 +138,7 @@ function traverseNode(node, basePath) {
     case 'ImportDeclaration':
       let filePath = node.source.value;
       let dirPath = NODE_PATH;
-      const isRelativePath = filePath.startsWith('.')
+      const isRelativePath = filePath.startsWith('.');
       if (flags.rootAlias && filePath.startsWith(flags.rootAlias)) {
         filePath = filePath.replace(new RegExp(`^${flags.rootAlias}\/?`), '');
         dirPath = flags.root;
@@ -158,9 +158,11 @@ function traverseNode(node, basePath) {
       break;
     case 'TaggedTemplateExpression':
       if (node.tag.name === 'i18n') {
-        const strings = node.quasi.quasis.map(quasi => quasi.value.raw);
+        const strings = node.quasi.quasis.map((quasi) => quasi.value.raw);
         const key = strings.join('\x01');
-        const translation = db.fileSystem[key] && db.fileSystem[key][options.locale || 'default'] || strings.slice();
+        const translation =
+          (db.fileSystem[key] && db.fileSystem[key][options.locale || 'default']) ||
+          strings.slice();
         // Skip empty strings & already existing keys
         if (!db.indexed[key] && translation.join('') !== '') {
           (db.indexed[key] = {})[options.locale || 'default'] = translation;
@@ -168,9 +170,9 @@ function traverseNode(node, basePath) {
       }
       break;
     default:
-      for (let key in node) {
+      for (const key in node) {
         if (typeof node[key] === 'object') {
-          traverseNode((node[key] || {}), basePath);
+          traverseNode(node[key] || {}, basePath);
         }
       }
   }
@@ -181,5 +183,5 @@ function hasMissingTranslations(db) {
   // TODO: check for missing language translations
   const totalIndexedDBKeys = Object.keys(db.indexed).length;
   const totalFileSystemDBKeys = Object.keys(db.fileSystem).length;
-  return (totalIndexedDBKeys !== totalFileSystemDBKeys);
+  return totalIndexedDBKeys !== totalFileSystemDBKeys;
 }

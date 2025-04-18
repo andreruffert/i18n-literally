@@ -1,11 +1,11 @@
+import fs from 'node:fs';
 import { createServer } from 'node:http';
-import fs from 'node:fs'
 import open from 'open';
+import pkg from '../package.json' with { type: 'json' };
 import { mergeDB } from './helpers.js';
-import pkg from '../package.json' with { type: "json" };
 
 const chunkRegex = /\$\{[0-9]\}/g;
-const chunks = (chunk, i) => (i ? ('${' + (i - 1) + '}') : '') + chunk;
+const chunks = (chunk, i) => (i ? '${' + (i - 1) + '}' : '') + chunk;
 
 const getRoute = (options, req, res) => {
   const routes = {
@@ -15,7 +15,7 @@ const getRoute = (options, req, res) => {
         const localizedSentence = options.db.indexed[key][options.locale].map(chunks).join('');
         const missingTranslation = defaultSentence === localizedSentence;
         return `
-          <div class="group" ${(missingTranslation) ? 'data-missing-translation' : ''}>
+          <div class="group" ${missingTranslation ? 'data-missing-translation' : ''}>
             <div>
               <b>en</b>
               <textarea disabled>${defaultSentence}</textarea>
@@ -28,7 +28,7 @@ const getRoute = (options, req, res) => {
         `;
       });
 
-      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(`
         <!DOCTYPE html>
         <html lang="en" dir="ltr">
@@ -186,7 +186,7 @@ const getRoute = (options, req, res) => {
     '/update': (req, res) => {
       const body = [];
       const db = {};
-      req.on('data', data => body.push(data));
+      req.on('data', (data) => body.push(data));
       req.on('end', () => {
         const existingDB = options.db.fileSystem;
         const updatedDB = JSON.parse(body.join(''));
@@ -204,10 +204,10 @@ const getRoute = (options, req, res) => {
       res.end();
       process.exit(0);
     },
-    'default': (req, res) => {
+    default: (req, res) => {
       res.writeHead(404, 'Not Found');
       res.end();
-    }
+    },
   };
   return (routes[req.url] || routes['default'])(req, res);
 };
