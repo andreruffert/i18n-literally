@@ -1,9 +1,8 @@
-'use strict';
-
-const fs = require('fs');
-const opn = require('opn');
-const { mergeDB } = require('./helpers');
-const pkg = require('../package.json');
+import { createServer } from 'node:http';
+import fs from 'node:fs'
+import open from 'open';
+import { mergeDB } from './helpers.js';
+import pkg from '../package.json' with { type: "json" };
 
 const chunkRegex = /\$\{[0-9]\}/g;
 const chunks = (chunk, i) => (i ? ('${' + (i - 1) + '}') : '') + chunk;
@@ -213,12 +212,10 @@ const getRoute = (options, req, res) => {
   return (routes[req.url] || routes['default'])(req, res);
 };
 
-function launchApp(options = {}, port = 8000) {
-  const server = require('http').createServer((req, res) => getRoute(options, req, res));
+export function launchApp(options = {}, port = 8000) {
+  const server = createServer((req, res) => getRoute(options, req, res));
   return server.listen(port, () => {
     const url = `http://localhost:${port}`;
-    opn(url).then(() => console.log('Updating via ' + url));
+    open(url).then(() => console.log('Updating via ' + url));
   });
 }
-
-module.exports = launchApp;

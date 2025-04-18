@@ -1,13 +1,12 @@
 #!/usr/bin/env node
-'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const meow = require('meow');
-const chalk = require('chalk');
-const parser = require('@babel/parser');
-const launchApp = require('./app');
-const pkg = require('../package.json');
+import fs from 'node:fs'
+import path from 'node:path';
+import meow from 'meow';
+import chalk from 'chalk';
+import { parse } from '@babel/parser';
+import { launchApp } from './app.js';
+import pkg from '../package.json' with { type: "json" };
 
 const CLI_NAME = Object.keys(pkg.bin)[0];
 const CMDS = ['edit', 'check-missing-translations'];
@@ -31,7 +30,9 @@ const cli = meow(`
 
   Example:
     $ ${CLI_NAME} edit ./index.js es
-`);
+`, {
+  importMeta: import.meta,
+});
 
 
 const args = [...cli.input];
@@ -127,7 +128,7 @@ console.log(`
 
 function traverseFiles(file) {
   const code = fs.readFileSync(file).toString();
-  const ast = parser.parse(code, parserOptions);
+  const ast = parse(code, parserOptions);
   const basePath = path.dirname(file);
   ast.program.body.forEach(node => traverseNode(node, basePath));
 }

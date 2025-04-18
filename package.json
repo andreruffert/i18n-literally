@@ -5,24 +5,24 @@
   "license": "MIT",
   "repository": "andreruffert/i18n-literally",
   "author": "André Ruffert",
+  "type": "module",
   "main": "index.js",
   "bin": {
     "literally": "cli/cli.js"
   },
-  "scripts": {
-    "test": "ava",
-    "test-translations": "./cli/cli.js check-missing-translations test.js",
-    "literally": "./cli/cli.js test.js"
-  },
-  "ava": {
-    "require": [
-      "esm"
-    ]
+  "engines": {
+    "node": ">=18",
+    "npm": ">=9"
   },
   "files": [
     "index.js",
     "cli"
   ],
+  "scripts": {
+    "test": "node --test \"./test/*.js\"",
+    "test-translations": "./cli/cli.js check-missing-translations test/index.spec.js",
+    "literally": "./cli/cli.js test/index.spec.js"
+  },
   "keywords": [
     "i18n",
     "js",
@@ -33,13 +33,9 @@
     "cli"
   ],
   "dependencies": {
-    "@babel/parser": "^7.9.4",
-    "chalk": "^4.0.0",
-    "meow": "^8.0.0",
-    "opn": "^6.0.0"
-  },
-  "devDependencies": {
-    "ava": "^3.7.0",
-    "esm": "^3.2.25"
+    "@babel/parser": "7.27.0",
+    "chalk": "5.4.1",
+    "meow": "13.2.0",
+    "open": "10.1.1"
   }
 }
