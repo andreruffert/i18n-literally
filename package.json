@@ -19,6 +19,8 @@
     "cli"
   ],
   "scripts": {
+    "format": "biome check --write",
+    "lint": "biome ci",
     "test": "node --test \"./test/*.js\"",
     "test-translations": "./cli/cli.js check-missing-translations test/index.spec.js",
     "literally": "./cli/cli.js test/index.spec.js"
@@ -37,5 +39,8 @@
     "chalk": "5.4.1",
     "meow": "13.2.0",
     "open": "10.1.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4"
   }
 }
